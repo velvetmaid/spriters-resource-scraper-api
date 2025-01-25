@@ -3,6 +3,11 @@ import toml
 import requests
 
 
+def get_base_url():
+    config = toml.load(".toml")
+    return config["settings"]["base_url"]
+
+
 def get_soup(path=""):
     config = toml.load(".toml")
     base_url = config["settings"]["base_url"]
