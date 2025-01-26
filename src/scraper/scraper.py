@@ -17,9 +17,8 @@ def scrape_menu():
             menu_name = nav_header.get_text(strip=True)
             menu_data.append({"menu": menu_name})
 
-    json_data = json.dumps(menu_data, indent=4)
-    return json_data
-
+    # json_data = json.dumps(menu_data, indent=4)
+    return menu_data
 
 # Function to scrape menu items based on selected menu
 def scrape_menu_item(selected_menu):
@@ -36,8 +35,8 @@ def scrape_menu_item(selected_menu):
             leftnav_title = link.get_text(strip=True)
             menu_item_data.append({"title": leftnav_title, "link": leftnav_link})
 
-    json_data = json.dumps(menu_item_data, indent=4)
-    return json_data
+    # json_data = json.dumps(menu_item_data, indent=4)
+    return menu_item_data
 
 
 # Function to scrape category info
@@ -60,15 +59,15 @@ def scrape_category_info(category):
             data_value = cols[1].get_text(strip=True)
             category_data[data_title] = data_value
 
-    json_data = json.dumps(category_data, indent=4)
-    return json_data
+    # json_data = json.dumps(category_data, indent=4)
+    return category_data
 
 
 # Function to scrape category sections
 def scrape_category_sections(category):
     soup = get_soup(category)
     sections = soup.find_all("div", class_="section")
-    data = []
+    sections_data = []
 
     for section in sections:
         section_title = section.get_text(strip=True)
@@ -112,10 +111,10 @@ def scrape_category_sections(category):
                         }
                     )
 
-        data.append({"section_title": section_title, "items": items})
-        json_data = json.dumps(data, indent=4)
+        sections_data.append({"section_title": section_title, "items": items})
+        # json_data = json.dumps(data, indent=4)
 
-    return json_data
+    return sections_data
 
 
 # Function to scrape category info & sections
@@ -139,7 +138,7 @@ def scrape_category_info_sections(category):
             data_value = cols[1].get_text(strip=True)
             category_data[data_title] = data_value
 
-    data = []
+    sections_data = []
 
     for section in sections:
         section_title = section.get_text(strip=True)
@@ -183,17 +182,17 @@ def scrape_category_info_sections(category):
                         }
                     )
 
-        data.append({"section_title": section_title, "items": items})
-        category_data["sections"] = data
-        json_data = json.dumps(category_data, indent=4)
+        sections_data.append({"section_title": section_title, "items": items})
+        category_data["sections"] = sections_data
+        # json_data = json.dumps(category_data, indent=4)
 
-    return json_data
+    return category_data
 
 
 # Function to scrape search results and combine data
 def scrape_search_results(keyword):
     soup = get_soup(f"/search/?q={keyword}")
-    combined_data = {}
+    search_results_data = {}
 
     sections = soup.find_all("div", class_="section")
 
@@ -209,8 +208,8 @@ def scrape_search_results(keyword):
         else:
             continue
 
-        if category not in combined_data:
-            combined_data[category] = {
+        if category not in search_results_data:
+            search_results_data[category] = {
                 "title": section_title,
                 "count": section_count,
                 "items": [],
@@ -228,7 +227,7 @@ def scrape_search_results(keyword):
                     "link": f'{base_url}{icon["href"]}',
                     "image_url": f'{base_url}{icon.find("img")["src"]}',
                 }
-                combined_data[category]["items"].append(item_data)
+                search_results_data[category]["items"].append(item_data)
 
-    json_data = json.dumps(combined_data, indent=4)
-    return json_data
+    # json_data = json.dumps(search_results_data, indent=4)
+    return search_results_data
