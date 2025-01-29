@@ -3,7 +3,7 @@ from src.scraper.scraper import *
 from src.scraper.utils import *
 
 description = """
-![Spriters-Resource Scraper](https://www.spriters-resource.com/resources/images/light/header/logo.png)
+![Spriters Resource](https://www.spriters-resource.com/resources/images/light/header/logo.png)
 """
 
 app = FastAPI(
