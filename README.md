@@ -15,7 +15,7 @@
 To get started, clone this repository and install the required dependencies:
 
 ```bash
-git clone https://github.com/username/spriters-resource-scraper-api.git
+git clone https://github.com/velvetmaid/spriters-resource-scraper-api.git
 cd spriters-resource-scraper-api
 pip install -r requirements.txt
 ```
