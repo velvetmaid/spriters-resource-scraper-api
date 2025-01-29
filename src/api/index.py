@@ -1,93 +1,91 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlparse
+from fastapi import FastAPI, HTTPException
 from src.scraper.scraper import *
-import json
+from src.scraper.utils import *
+
+description = """
+![Spriters Resource](https://www.spriters-resource.com/resources/images/light/header/logo.png)
+"""
+
+app = FastAPI(
+    title="Spriters-Resource Scraper API",
+    description=description,
+    summary="API to scrape almost everything from Spriters Resource.",
+    terms_of_service="https://www.spriters-resource.com/page/faq/",
+    license_info={
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT",
+    },
+)
 
 
-class RequestHandler(BaseHTTPRequestHandler):
-    def _set_headers(self, status_code=200):
-        self.send_response(status_code)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-
-    def do_GET(self):
-        parsed_path = urlparse(self.path)
-        path = parsed_path.path
-        try:
-            if path == "/":
-                response = {"status": "success", "success": True}
-            elif path == "/menus":
-                data = scrape_menu()
-                response = {"status": "success", "success": True, "data": data}
-            elif path.startswith("/menu_items/"):
-                item = path.split("/")[-1]
-                data = scrape_menu_item(item)
-                response = {
-                    "status": "success",
-                    "success": True,
-                    "param": item,
-                    "data": data,
-                }
-            elif path.startswith("/category_info/"):
-                category = path.split("/")[-1]
-                data = scrape_category_info(category)
-                response = {
-                    "status": "success",
-                    "success": True,
-                    "param": category,
-                    "data": data,
-                }
-            elif path.startswith("/category_sections/"):
-                category = path.split("/")[-1]
-                data = scrape_category_sections(category)
-                response = {
-                    "status": "success",
-                    "success": True,
-                    "param": category,
-                    "data": data,
-                }
-            elif path.startswith("/category_info_sections/"):
-                category = path.split("/")[-1]
-                data = scrape_category_info_sections(category)
-                response = {
-                    "status": "success",
-                    "success": True,
-                    "param": category,
-                    "data": data,
-                }
-            elif path.startswith("/search/"):
-                keyword = path.split("/")[-1]
-                data = scrape_search_results(keyword)
-                response = {
-                    "status": "success",
-                    "success": True,
-                    "keyword": keyword,
-                    "data": data,
-                }
-            else:
-                self._set_headers(404)
-                response = {"status": "error", "success": False, "message": "Not Found"}
-                self.wfile.write(json.dumps(response).encode())
-                return
-            self._set_headers(200)
-        except Exception as e:
-            self._set_headers(500)
-            response = {"status": "error", "success": False, "message": str(e)}
-        self.wfile.write(json.dumps(response).encode())
+@app.get("/", tags=["General"])
+def home():
+    """Home endpoint"""
+    data = check_base_url()
+    return data
 
 
-def run(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
-    server_address = ("", port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Starting httpd server on port {port}")
+@app.get("/menus", tags=["Scrape"])
+def get_menus():
+    """Get all menus"""
     try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("Server is stopping...")
-    finally:
-        httpd.server_close()
-        print("Server stopped.")
+        data = scrape_menu()
+        return {"status": "success", "success": True, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/menu_items/{item}", tags=["Scrape"])
+def get_menu_item(item: str):
+    """Get menu item details"""
+    try:
+        data = scrape_menu_item(item)
+        return {"status": "success", "success": True, "param": item, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/category_info/{category}", tags=["Scrape"])
+def get_category_info(category: str):
+    """Get category information"""
+    try:
+        data = scrape_category_info(category)
+        return {"status": "success", "success": True, "param": category, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/category_sections/{category}", tags=["Scrape"])
+def get_category_sections(category: str):
+    """Get category sections"""
+    try:
+        data = scrape_category_sections(category)
+        return {"status": "success", "success": True, "param": category, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/category_info_sections/{category}", tags=["Scrape"])
+def get_category_info_sections(category: str):
+    """Get category info sections"""
+    try:
+        data = scrape_category_info_sections(category)
+        return {"status": "success", "success": True, "param": category, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/search/{keyword}", tags=["Scrape"])
+def search(keyword: str):
+    """Search for a keyword"""
+    try:
+        data = scrape_search_results(keyword)
+        return {"status": "success", "success": True, "keyword": keyword, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
-    run()
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
