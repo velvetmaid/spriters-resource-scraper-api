@@ -295,3 +295,31 @@ def scrape_selected_item(item):
     item_data["sections"] = sections_data
 
     return item_data
+
+
+def scrape_sheet(url):
+    soup = get_soup(url)
+
+    sheet_info = soup.find("div", id="game-info-wrapper")
+    table_info = sheet_info.find("table", class_="display")
+    header_row = table_info.find("tr", class_="rowheader")
+
+    sheet_data = {}
+    sheet_title = header_row.find("th").get_text(strip=True)
+    sheet_data["title"] = sheet_title
+
+    rows = table_info.find_all("tr")[1:]
+    for row in rows:
+        cols = row.find_all("td")
+        if len(cols) == 2:
+            data_title = cols[0].get_text(strip=True).lower().replace(" ", "_")
+            data_value = cols[1].get_text(strip=True)
+            sheet_data[data_title] = data_value
+
+    sheet_image = soup.find("div", id="sheet-container")
+    full_view_link = sheet_image.find("a", href=True)
+    img_tag = sheet_image.find("img")
+    sheet_data["image_full_view_url"] = f'{base_url}{full_view_link["href"]}'
+    sheet_data["sheet_image_url"] = f'{base_url}{img_tag["src"]}'
+
+    return sheet_data

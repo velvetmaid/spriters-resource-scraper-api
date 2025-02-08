@@ -75,22 +75,42 @@ def get_category_info_sections(category: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/items/", tags=["Scrape"])
-def get_selected_item(selected_item: str):
-    """Get selected item sections"""
-    try:
-        data = scrape_selected_item(selected_item)
-        return {"status": "success", "success": True, "param": selected_item, "data": data}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @app.get("/search/", tags=["Scrape"])
 def search(keyword: str):
     """Search for a keyword"""
     try:
         data = scrape_search_results(keyword)
         return {"status": "success", "success": True, "keyword": keyword, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/items/", tags=["Scrape"])
+def get_selected_item(selected_item: str):
+    """Get selected item sections"""
+    try:
+        data = scrape_selected_item(selected_item)
+        return {
+            "status": "success",
+            "success": True,
+            "param": selected_item,
+            "data": data,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/sheet/", tags=["Scrape"])
+def get_selected_sheet(selected_sheet: str):
+    """Get selected item sections"""
+    try:
+        data = scrape_sheet(selected_sheet)
+        return {
+            "status": "success",
+            "success": True,
+            "param": selected_sheet,
+            "data": data,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
