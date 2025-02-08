@@ -81,36 +81,32 @@ def scrape_category_sections(category):
             sheet_icons = section.find_next("div", class_="updatesheeticons").find_all(
                 "a"
             )
-            for sheet in sheet_icons:
-                sheet_title = sheet.find("span", class_="iconheadertext")
-                if sheet_title:
-                    sheet_title = sheet_title.get_text(strip=True)
-                    sheet_url = sheet.get("href")
-                    sheet_image = sheet.find("img").get("src")
-
-                    items.append(
-                        {
-                            "title": sheet_title,
-                            "url": f"{base_url}{sheet_url}",
-                            "image": f"{base_url}{sheet_image}",
-                        }
-                    )
+            items = [
+                {
+                    "id": idx,
+                    "title": sheet.find("span", class_="iconheadertext").get_text(
+                        strip=True
+                    ),
+                    "url": f"{base_url}{sheet.get('href')}",
+                    "image": f"{base_url}{sheet.find('img').get('src')}",
+                }
+                for idx, sheet in enumerate(sheet_icons, 1)
+                if sheet.find("span", class_="iconheadertext") and sheet.find("img")
+            ]
         else:
             game_links = section.find_next("div").find_all("a")
-            for game in game_links:
-                game_title = game.find("span", class_="gameiconheadertext")
-                if game_title:
-                    game_title = game_title.get_text(strip=True)
-                    game_url = game.get("href")
-                    game_image = game.find("img").get("src")
-
-                    items.append(
-                        {
-                            "title": game_title,
-                            "url": f"{base_url}{game_url}",
-                            "image": f"{base_url}{game_image}",
-                        }
-                    )
+            items = [
+                {
+                    "id": idx,
+                    "title": game.find("span", class_="gameiconheadertext").get_text(
+                        strip=True
+                    ),
+                    "url": f"{base_url}{game.get('href')}",
+                    "image": f"{base_url}{game.find('img').get('src')}",
+                }
+                for idx, game in enumerate(game_links, 1)
+                if game.find("span", class_="gameiconheadertext") and game.find("img")
+            ]
 
         sections_data.append({"section_title": section_title, "items": items})
         # json_data = json.dumps(data, indent=4)
@@ -152,36 +148,32 @@ def scrape_category_info_sections(category):
             sheet_icons = section.find_next("div", class_="updatesheeticons").find_all(
                 "a"
             )
-            for sheet in sheet_icons:
-                sheet_title = sheet.find("span", class_="iconheadertext")
-                if sheet_title:
-                    sheet_title = sheet_title.get_text(strip=True)
-                    sheet_url = sheet.get("href")
-                    sheet_image = sheet.find("img").get("src")
-
-                    items.append(
-                        {
-                            "title": sheet_title,
-                            "url": f"{base_url}{sheet_url}",
-                            "image": f"{base_url}{sheet_image}",
-                        }
-                    )
+            items = [
+                {
+                    "id": idx,
+                    "title": sheet.find("span", class_="iconheadertext").get_text(
+                        strip=True
+                    ),
+                    "url": f"{base_url}{sheet.get('href')}",
+                    "image": f"{base_url}{sheet.find('img').get('src')}",
+                }
+                for idx, sheet in enumerate(sheet_icons, 1)
+                if sheet.find("span", class_="iconheadertext") and sheet.find("img")
+            ]
         else:
             game_links = section.find_next("div").find_all("a")
-            for game in game_links:
-                game_title = game.find("span", class_="gameiconheadertext")
-                if game_title:
-                    game_title = game_title.get_text(strip=True)
-                    game_url = game.get("href")
-                    game_image = game.find("img").get("src")
-
-                    items.append(
-                        {
-                            "title": game_title,
-                            "url": f"{base_url}{game_url}",
-                            "image": f"{base_url}{game_image}",
-                        }
-                    )
+            items = [
+                {
+                    "id": idx,
+                    "title": game.find("span", class_="gameiconheadertext").get_text(
+                        strip=True
+                    ),
+                    "url": f"{base_url}{game.get('href')}",
+                    "image": f"{base_url}{game.find('img').get('src')}",
+                }
+                for idx, game in enumerate(game_links, 1)
+                if game.find("span", class_="gameiconheadertext") and game.find("img")
+            ]
 
         sections_data.append({"section_title": section_title, "items": items})
         category_data["sections"] = sections_data
@@ -221,14 +213,17 @@ def scrape_search_results(keyword):
         ) or section.find_next("div", style="text-align: center; margin-top: 10px;")
 
         if icons:
-            for idx, icon in enumerate(icons.find_all("a", href=True), 1):
-                item_data = {
+            items = [
+                {
                     "id": idx,
                     "title": icon.find("span").get_text(strip=True),
                     "link": f'{base_url}{icon["href"]}',
                     "image_url": f'{base_url}{icon.find("img")["src"]}',
                 }
-                search_results_data[category]["items"].append(item_data)
+                for idx, icon in enumerate(icons.find_all("a", href=True), 1)
+            ]
+
+            search_results_data[category]["items"].append(items)
 
     # json_data = json.dumps(search_results_data, indent=4)
     return search_results_data
@@ -242,10 +237,14 @@ def scrape_selected_item(item):
     table_info = item_info.find("table", class_="display")
     header_row = table_info.find("tr", class_="rowheader")
     rss_feed_url = header_row.find("a", href=True)["href"]
-    
+
     thumbnail = item_info.find("div", id="game-icon-container")
-    thumbnail_image_title = thumbnail.find("div", class_="gameiconheader").find("span").getText()
-    thumbnail_image_url = thumbnail.find("div", class_="gameiconbody").find("img").get('src')
+    thumbnail_image_title = (
+        thumbnail.find("div", class_="gameiconheader").find("span").getText()
+    )
+    thumbnail_image_url = (
+        thumbnail.find("div", class_="gameiconbody").find("img").get("src")
+    )
 
     item_data = {}
     item_title = header_row.find("th").get_text(strip=True)
@@ -276,19 +275,20 @@ def scrape_selected_item(item):
         # Find all sheet icons in the current section
         sheet_icons = section.find_next("div", class_="updatesheeticons")
         if sheet_icons:
-            for sheet in sheet_icons.find_all("a"):
-                sheet_title = sheet.find("span", class_="iconheadertext")
-                sheet_url = sheet.get("href")
-                sheet_image = sheet.find("img")
-
-                if sheet_title and sheet_url and sheet_image:
-                    items.append(
-                        {
-                            "title": sheet_title.get_text(strip=True),
-                            "url": f"{base_url}{sheet_url}",
-                            "image": f"{base_url}{sheet_image.get('src')}",
-                        }
-                    )
+            items = [
+                {
+                    "id": idx,
+                    "title": sheet.find("span", class_="iconheadertext").get_text(
+                        strip=True
+                    ),
+                    "url": f"{base_url}{sheet.get('href')}",
+                    "image": f"{base_url}{sheet.find('img').get('src')}",
+                }
+                for idx, sheet in enumerate(sheet_icons.find_all("a"), 1)
+                if sheet.find("span", class_="iconheadertext")
+                and sheet.get("href")
+                and sheet.find("img")
+            ]
 
         sections_data.append({"section_title": section_title, "items": items})
 
