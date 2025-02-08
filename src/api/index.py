@@ -75,7 +75,17 @@ def get_category_info_sections(category: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/search/{keyword}", tags=["Scrape"])
+@app.get("/items/", tags=["Scrape"])
+def get_selected_item(selected_item: str):
+    """Get selected item sections"""
+    try:
+        data = scrape_selected_item(selected_item)
+        return {"status": "success", "success": True, "param": selected_item, "data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/search/", tags=["Scrape"])
 def search(keyword: str):
     """Search for a keyword"""
     try:
