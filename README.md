@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  <a href="https://spriters-resource-scraper-api-production.up.railway.app/docs" target="_blank"><strong>API Documentation</strong></a>
+  <a href="https://velvetmaid.github.io/spriters-resource-scraper-api/" target="_blank"><strong>API Documentation</strong></a>
 </p>
 
 ## Installation
