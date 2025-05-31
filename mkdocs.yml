@@ -1,0 +1,33 @@
+# Project information
+site_name: Spriters Resource Scraper API
+site_url: https://velvetmaid.github.io/spriters-resource-scraper-api/
+site_author: Velvet Maid
+site_description: Async API wrapper for hakush.in written in Python 
+
+# Repository
+repo_name: spriters-resource-scraper-api
+repo_url: https://github.com/velvetmaid/spriters-resource-scraper-api
+
+# Copyright
+copyright: Copyright &copy;VelvetMaid
+
+# Configuration
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: red
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: red
